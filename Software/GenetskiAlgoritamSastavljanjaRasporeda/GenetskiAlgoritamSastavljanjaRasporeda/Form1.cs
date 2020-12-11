@@ -15,6 +15,12 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
         public Form1()
         {
             InitializeComponent();
+            UcitajDatoteke();
+        }
+
+        private void UcitajDatoteke()
+        {
+            throw new NotImplementedException();
         }
     }
 }
