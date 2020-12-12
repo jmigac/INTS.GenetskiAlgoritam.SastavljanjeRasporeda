@@ -1,4 +1,8 @@
-﻿using System;
+﻿using GenetskiAlgoritamSastavljanjaRasporeda.Controller;
+using GenetskiAlgoritamSastavljanjaRasporeda.Controller.FactoryMethod;
+using GenetskiAlgoritamSastavljanjaRasporeda.Controller.FactoryMethod.ConcreteCreator;
+using GenetskiAlgoritamSastavljanjaRasporeda.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -20,7 +24,13 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
 
         private void UcitajDatoteke()
         {
-            throw new NotImplementedException();
+            Data.GetInstance().AllStudents= AbstractFactory.GetValuesForStudents(@"D:\Workspace\Projekt\INTS\INTS.GenetskiAlgoritam.SastavljanjeRasporeda\Software\GenetskiAlgoritamSastavljanjaRasporeda\GenetskiAlgoritamSastavljanjaRasporeda\Datoteke\studenti.csv");
+            string st = "";
+            foreach (var item in Data.GetInstance().AllStudents)
+            {
+                st += item.Ime + " " + item.Prezime + " | ";
+            }
+            MessageBox.Show(st);
         }
     }
 }

@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\Singleton\Data.cs" />
+    <Compile Include="Controller\FactoryMethod\AbstractFactory.cs" />
+    <Compile Include="Controller\FactoryMethod\ConcreteCreator\StudentConcreteCreator.cs" />
+    <Compile Include="Controller\FactoryMethod\ConcreteProduct\StudentConcreteProduct.cs" />
+    <Compile Include="Controller\FactoryMethod\DatotekaCreator.cs" />
+    <Compile Include="Controller\FactoryMethod\DatotekaProduct.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
