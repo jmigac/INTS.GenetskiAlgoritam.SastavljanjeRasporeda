@@ -11,9 +11,13 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Model
         private int _id { get; set; }
         private string _naziv { get; set; }
         private int _godinaStudija { get; set; }
+        private HashSet<DateTime> _ciljaniDatum { get; set; }
+
         public int Id { get=>this._id; set=>setId(value); }
         public string Naziv { get=>this._naziv; set=>setNaziv(value); }
         public int GodinaStudija { get=>this._godinaStudija; set=>setGodinaStudija(value); }
+
+        public HashSet<DateTime> CiljaniDatum { get => this._ciljaniDatum; set => setCiljaniDatum(value); }
 
         public Kolegij()
         {
@@ -36,6 +40,11 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Model
         private void setGodinaStudija(int value)
         {
             this._godinaStudija = value;
+        }
+
+        private void setCiljaniDatum(HashSet<DateTime> value)
+        {
+            this._ciljaniDatum = value;
         }
 
     }
