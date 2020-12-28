@@ -13,6 +13,11 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
         private static readonly object padlock = new object();
 
         public HashSet<Student> AllStudents { get; set; }
+        public HashSet<Dvorana> AllDvorana { get; set; }
+        public HashSet<Kolegij> AllKolegij { get; set; }
+        public HashSet<Kolokvij> AllKolokvij { get; set; }
+        public HashSet<Profesor> AllProfesor { get; set; }
+
         private Data() { }
         public static Data GetInstance()
         {
@@ -28,5 +33,6 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
             }
             return INSTANCE;
         }
+
     }
 }
