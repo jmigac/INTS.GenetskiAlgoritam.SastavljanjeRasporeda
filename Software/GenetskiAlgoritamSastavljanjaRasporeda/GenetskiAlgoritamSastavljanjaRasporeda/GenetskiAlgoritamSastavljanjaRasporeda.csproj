@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\FactoryMethod\ConcreteCreator\DvoranaConcreteCreator.cs" />
+    <Compile Include="Controller\FactoryMethod\ConcreteCreator\KolegijConcreteCreator.cs" />
+    <Compile Include="Controller\FactoryMethod\ConcreteCreator\ProfesorConcreteCreator.cs" />
+    <Compile Include="Controller\FactoryMethod\ConcreteProduct\DvoranaConcreteProduct.cs" />
+    <Compile Include="Controller\FactoryMethod\ConcreteProduct\KolegijConcreteProduct.cs" />
+    <Compile Include="Controller\FactoryMethod\ConcreteProduct\ProfesorConcreteProduct.cs" />
     <Compile Include="Controller\Singleton\Data.cs" />
     <Compile Include="Controller\FactoryMethod\AbstractFactory.cs" />
     <Compile Include="Controller\FactoryMethod\ConcreteCreator\StudentConcreteCreator.cs" />
@@ -58,10 +64,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-<<<<<<< HEAD
     <Compile Include="Model\Kolokvij.cs" />
-=======
->>>>>>> ui
     <Compile Include="Model\Dvorana.cs" />
     <Compile Include="Model\Kolegij.cs" />
     <Compile Include="Model\Profesor.cs" />
