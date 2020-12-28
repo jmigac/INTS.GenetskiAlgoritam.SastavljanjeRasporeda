@@ -28,13 +28,43 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.dgvRasporedKolokvija = new System.Windows.Forms.DataGridView();
+            this.mCalendar = new System.Windows.Forms.MonthCalendar();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvRasporedKolokvija)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // dgvRasporedKolokvija
+            // 
+            this.dgvRasporedKolokvija.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvRasporedKolokvija.Location = new System.Drawing.Point(12, 12);
+            this.dgvRasporedKolokvija.Name = "dgvRasporedKolokvija";
+            this.dgvRasporedKolokvija.Size = new System.Drawing.Size(377, 404);
+            this.dgvRasporedKolokvija.TabIndex = 0;
+            // 
+            // mCalendar
+            // 
+            this.mCalendar.Location = new System.Drawing.Point(401, 12);
+            this.mCalendar.Name = "mCalendar";
+            this.mCalendar.TabIndex = 1;
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(608, 428);
+            this.Controls.Add(this.mCalendar);
+            this.Controls.Add(this.dgvRasporedKolokvija);
+            this.Name = "Form1";
+            this.Text = "Raspored pisanja kolokvija";
+            ((System.ComponentModel.ISupportInitialize)(this.dgvRasporedKolokvija)).EndInit();
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.DataGridView dgvRasporedKolokvija;
+        private System.Windows.Forms.MonthCalendar mCalendar;
     }
 }
 

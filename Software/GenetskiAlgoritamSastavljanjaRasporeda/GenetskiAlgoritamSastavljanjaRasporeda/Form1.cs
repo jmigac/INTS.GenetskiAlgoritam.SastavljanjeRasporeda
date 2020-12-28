@@ -30,7 +30,7 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
             {
                 st += item.Ime + " " + item.Prezime + " | ";
             }
-            MessageBox.Show(st);
+            //MessageBox.Show(st);
         }
     }
 }
