@@ -24,14 +24,15 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
             UcitajDatoteke();
 
 
-            Population population = new Population(50, new Kromozom(), new Kromozom.Fitness(), new EliteSelection());
+            Population population = new Population(40, new Kromozom(), new Kromozom.Fitness(), new EliteSelection());
 
             int i = 0;
             while (true)
             {
                 population.RunEpoch();
                 i++;
-                if (population.FitnessMax >= 0.99 || i >= 50)
+                lblScore.Text = "Fitness:" + population.FitnessSum;
+                if (population.FitnessMax >= 0.99 || i >= 40)
                 {
                     break;
                 }
@@ -39,9 +40,10 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
 
             var najbolji = (population.BestChromosome as Kromozom).Value.ToList();
 
-            foreach(var neki in najbolji) {
-                MessageBox.Show(neki.VrijemePocetka.ToString());
-            }
+            dgvRasporedKolokvija.DataSource = null;
+            najbolji.Sort((x, y) => DateTime.Compare(x.VrijemePocetka, y.VrijemePocetka));
+            dgvRasporedKolokvija.DataSource = najbolji;
+            
 
         }
 

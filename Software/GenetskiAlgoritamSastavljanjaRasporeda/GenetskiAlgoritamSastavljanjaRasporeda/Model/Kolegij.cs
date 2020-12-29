@@ -17,6 +17,7 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Model
         public string Naziv { get=>this._naziv; set=>setNaziv(value); }
         public int GodinaStudija { get=>this._godinaStudija; set=>setGodinaStudija(value); }
 
+
         public HashSet<DateTime> CiljaniDatum { get => this._ciljaniDatum; set => setCiljaniDatum(value); }
 
         public Kolegij()
@@ -46,6 +47,9 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Model
         {
             this._ciljaniDatum = value;
         }
-
+        public override string ToString()
+        {
+            return this.Naziv;
+        }
     }
 }

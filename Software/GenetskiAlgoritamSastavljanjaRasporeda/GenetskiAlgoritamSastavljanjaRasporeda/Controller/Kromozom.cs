@@ -30,6 +30,8 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
             public Profesor Profesor { get; set; }
 
             public List<Student> Students { get; set; }
+
+            public int GodinaStudija { get; set; }
         }
 
 
@@ -55,20 +57,46 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
                     {
                         int brStudenata = GetBrojStudenataNaGodini(course.GodinaStudija);
                         int tk=Random.Next(0, 2);
+                        int idGeneratora = 1;
                         yield return new TimeSlotChromosome()
                         {
+                            id = idGeneratora++,
                             VrijemePocetka = nesto.AddHours(Random.Next(6, 21)),
                             Kolegij = course,
                             TipKolokvija = tk,
-                            Dvorana = Data.GetInstance().AllDvorana.FirstOrDefault(x => x.Kapacitet >= brStudenata && x.TipDvorane == tk),
-                            //Profesor = Data.GetInstance().AllProfesor.Where(x => x.Kolegiji.Contains(course)).FirstOrDefault(),
-                            Students = Data.GetInstance().AllStudents.Where(x => x.GodinaStudija == course.GodinaStudija).ToList()
+                            Dvorana = Data.GetInstance().AllDvorana.OrderBy(x=>Guid.NewGuid()).FirstOrDefault(x => x.Kapacitet >= brStudenata && x.TipDvorane == tk),
+                            Profesor = GetProfesor(course),
+                            Students = Data.GetInstance().AllStudents.Where(x => x.GodinaStudija == course.GodinaStudija).ToList(),
+                            GodinaStudija = course.GodinaStudija
+                        
                         };
                     }
 
                 }
             }
             Value = generateRandomSlots().ToList();
+        }
+
+        private Profesor GetProfesor(Kolegij course)
+        {
+            Profesor returnMe = null;
+            foreach (var p in Data.GetInstance().AllProfesor)
+            {
+                if (p.Kolegiji.Count > 0)
+                {
+                    foreach (var k in p.Kolegiji)
+                    {
+                        if (k.Id == course.Id)
+                        {
+                            returnMe = p;
+                            break;
+                        }
+
+                    }
+                }
+                   
+            }
+            return returnMe;
         }
 
         public override IChromosome CreateNew()
@@ -121,6 +149,8 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
             {
                 double score = 1;
                 var values = (chromosome as Kromozom).Value;
+                List<TimeSlotChromosome> toDelete = new List<TimeSlotChromosome>();
+
                 var GetoverLaps = new Func<TimeSlotChromosome, List<TimeSlotChromosome>>(current => values
                     .Except(new[] { current })
                     .Where(slot => slot.VrijemePocetka.Day == current.VrijemePocetka.Day)
@@ -134,7 +164,7 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
                 foreach (var value in values)
                 {
                     var overLaps = GetoverLaps(value);
-                    //score -= overLaps.GroupBy(slot => slot.Profesor.Id).Sum(x => x.Count() - 1);
+                    score -= overLaps.GroupBy(slot => slot.Profesor.Id).Sum(x => x.Count() - 1);
                     score -= overLaps.GroupBy(slot => slot.Dvorana.Id).Sum(x => x.Count() - 1);
                     score -= overLaps.GroupBy(slot => slot.Kolegij.Id).Sum(x => x.Count() - 1);
                     score -= overLaps.Sum(item => item.Students.Intersect(value.Students).Count());

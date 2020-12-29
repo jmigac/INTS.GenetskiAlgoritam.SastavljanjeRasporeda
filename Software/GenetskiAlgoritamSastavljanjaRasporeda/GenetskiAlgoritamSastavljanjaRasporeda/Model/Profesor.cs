@@ -29,5 +29,9 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Model
             this.Prezime = prezime;
             this.Kolegiji = kolegiji;
         }
+        public override string ToString()
+        {
+            return this.Ime+" "+this.Prezime;
+        }
     }
 }

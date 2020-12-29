@@ -56,8 +56,10 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller.FactoryMethod.Concre
                 foreach (var k in kolegiji)
                 {
                     int idKolegija = int.Parse(k);
-                    profesoroviKolegiji.Add(Data.GetInstance().AllKolegij.First(x => x.Id == idKolegija));
+                    Kolegij test = Data.GetInstance().AllKolegij.FirstOrDefault(x => x.Id == idKolegija);
+                    profesoroviKolegiji.Add(test);
                 }
+                p.Kolegiji = profesoroviKolegiji;
                 return p;
             }
             catch (Exception ex)
