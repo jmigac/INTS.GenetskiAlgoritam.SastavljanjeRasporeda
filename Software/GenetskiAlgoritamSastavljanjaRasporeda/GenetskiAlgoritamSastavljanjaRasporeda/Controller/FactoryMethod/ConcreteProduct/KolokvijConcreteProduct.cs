@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller.FactoryMethod.ConcreteProduct
 {
-    class ProfesorConcreteProduct : DatotekaProduct<Profesor>
+    class KolokvijConcreteProduct : DatotekaProduct<Kolokvij>
     {
         public bool FileExist(string fileName)
         {
             return File.Exists(fileName) ? true : false;
         }
 
-        public HashSet<Profesor> GetEntities(string fileName)
+        public HashSet<Kolokvij> GetEntities(string fileName)
         {
-            HashSet<Profesor> allProfs = new HashSet<Profesor>();
+            HashSet<Kolokvij> allKolovijs = new HashSet<Kolokvij>();
             if (!FileExist(fileName)) throw new FileNotFoundException("File doesnt exists!");
             bool firstRead = false;
             using (var read = new StreamReader(fileName))
@@ -33,7 +33,7 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller.FactoryMethod.Concre
                     var values = line.Split(';');
                     try
                     {
-                        allProfs.Add(CreateEntity(values));
+                        allKolovijs.Add(CreateEntity(values));
                     }
                     catch (FormatException fe)
                     {
@@ -41,24 +41,22 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller.FactoryMethod.Concre
                     }
                 }
             }
-            return allProfs;
+            return allKolovijs;
         }
-        private Profesor CreateEntity(string[] values)
+
+        private Kolokvij CreateEntity(string[] values)
         {
             try
             {
-                Profesor p = new Profesor();
-                p.Id = int.Parse(values[0]);
-                p.Ime = values[1];
-                p.Prezime = values[2];
-                string[] kolegiji = values[3].Split(',');
-                List<Kolegij> profesoroviKolegiji = new List<Kolegij>();
-                foreach (var k in kolegiji)
-                {
-                    int idKolegija = int.Parse(k);
-                    profesoroviKolegiji.Add(Data.GetInstance().AllKolegij.First(x => x.Id == idKolegija));
-                }
-                return p;
+                Kolokvij k = new Kolokvij();
+                k.id = int.Parse(values[0]);
+                k.vrijemePocetka = DateTime.Parse(values[1]);
+                k.trajanje = double.Parse(values[2]);
+                k.kolegij = Data.GetInstance().AllKolegij.First(x => x.Id == int.Parse(values[3]));
+                k.profesor = Data.GetInstance().AllProfesor.First(x=>x.Id==int.Parse(values[4]));
+                k.tipKolokvija = int.Parse(values[5]);
+                k.dvorana = Data.GetInstance().AllDvorana.First(x=>x.Id == int.Parse(values[6]));
+                return k;
             }
             catch (Exception ex)
             {
