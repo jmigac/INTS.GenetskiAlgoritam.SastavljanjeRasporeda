@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GenetskiAlgoritamSastavljanjaRasporeda.Model
 {
-    class Dvorana
+    public class Dvorana
     {
         private int _id { get; set; }
         private string _naziv { get; set; }

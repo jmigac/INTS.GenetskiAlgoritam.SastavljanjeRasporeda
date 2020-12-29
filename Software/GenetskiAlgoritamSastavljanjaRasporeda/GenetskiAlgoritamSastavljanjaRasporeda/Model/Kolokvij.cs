@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GenetskiAlgoritamSastavljanjaRasporeda.Model
 {
-    class Kolokvij
+    public class Kolokvij
     {
         public int id { get; set; }
         public DateTime vrijemePocetka { get; set; }
@@ -31,7 +31,10 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Model
             this.tipKolokvija = tipKolokvija;
             this.dvorana = dvorana;
         }
+        public Kolokvij()
+        {
 
+        }
 
 
     }
