@@ -12,24 +12,25 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
 
     class Kromozom : ChromosomeBase
     {
-        public List<Kromozom> Value;
+        public List<TimeSlotChromosome> Value;
 
         static Random Random = new Random();
+        public struct TimeSlotChromosome
+        {
+            public int id { get; set; }
+            public DateTime VrijemePocetka { get; set; }
+            //nesmije poceti prije radnog vremena
+            public Kolegij Kolegij { get; set; }
+            public int TipKolokvija { get; set; }
+            //lab=0 ili obicni=1
+            public Dvorana Dvorana { get; set; }
+            //mora odgovarati tipu kolokvija
+            public DateTime VrijemeZavrsetka { get => VrijemePocetka.AddHours(1); set { } }
 
-        public int id { get; set; }
-        public DateTime VrijemePocetka { get; set; }
-        //nesmije poceti prije radnog vremena
-        public Kolegij Kolegij { get; set; }
-        public int TipKolokvija { get; set; }
-        //lab=0 ili obicni=1
-        public Dvorana Dvorana { get; set; }
-        //mora odgovarati tipu kolokvija
-        public DateTime VrijemeZavrsetka { get=>VrijemePocetka.AddHours(1); set { } }
+            public Profesor Profesor { get; set; }
 
-        public Profesor Profesor { get; set; }
-
-        public List<Student> Students { get; set; }
-
+            public List<Student> Students { get; set; }
+        }
 
 
         public Kromozom()
@@ -37,14 +38,14 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
             Generate();
         }
 
-        public Kromozom(List<Kromozom> list)
+        public Kromozom(List<TimeSlotChromosome> list)
         {
             Value = list.ToList();
         }
 
         public override void Generate()
         {
-            IEnumerable<Kromozom> generateRandomSlots()
+            IEnumerable<TimeSlotChromosome> generateRandomSlots()
             {
                 var courses = Data.GetInstance().AllKolegij;
 
@@ -53,16 +54,15 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
                     foreach (var nesto in course.CiljaniDatum)
                     {
                         int brStudenata = GetBrojStudenataNaGodini(course.GodinaStudija);
-                        yield return new Kromozom()
+                        int tk=Random.Next(0, 2);
+                        yield return new TimeSlotChromosome()
                         {
                             VrijemePocetka = nesto.AddHours(Random.Next(6, 21)),
                             Kolegij = course,
-                            TipKolokvija = Random.Next(0, 2),
-                            Dvorana = Data.GetInstance().AllDvorana.FirstOrDefault(x => x.Kapacitet >= brStudenata && x.TipDvorane == TipKolokvija),
-                            Profesor = Data.GetInstance().AllProfesor.Where(x => x.Kolegiji.Contains(course)).FirstOrDefault(),
+                            TipKolokvija = tk,
+                            Dvorana = Data.GetInstance().AllDvorana.FirstOrDefault(x => x.Kapacitet >= brStudenata && x.TipDvorane == tk),
+                            //Profesor = Data.GetInstance().AllProfesor.Where(x => x.Kolegiji.Contains(course)).FirstOrDefault(),
                             Students = Data.GetInstance().AllStudents.Where(x => x.GodinaStudija == course.GodinaStudija).ToList()
-
-
                         };
                     }
 
@@ -94,7 +94,9 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
 
             int brStudenata = GetBrojStudenataNaGodini(Mutirani.Kolegij.GodinaStudija);
 
-            Mutirani.Dvorana = Data.GetInstance().AllDvorana.FirstOrDefault(x => x.Kapacitet >= brStudenata && x.TipDvorane == TipKolokvija);
+
+
+            Mutirani.Dvorana = Data.GetInstance().AllDvorana.FirstOrDefault(x => x.Kapacitet >= brStudenata && x.TipDvorane == Mutirani.TipKolokvija);
             Value[index] = Mutirani;
         }
 
@@ -119,7 +121,7 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
             {
                 double score = 1;
                 var values = (chromosome as Kromozom).Value;
-                var GetoverLaps = new Func<Kromozom, List<Kromozom>>(current => values
+                var GetoverLaps = new Func<TimeSlotChromosome, List<TimeSlotChromosome>>(current => values
                     .Except(new[] { current })
                     .Where(slot => slot.VrijemePocetka.Day == current.VrijemePocetka.Day)
                     .Where(slot => slot.VrijemePocetka == current.VrijemePocetka
@@ -132,7 +134,7 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
                 foreach (var value in values)
                 {
                     var overLaps = GetoverLaps(value);
-                    score -= overLaps.GroupBy(slot => slot.Profesor.Id).Sum(x => x.Count() - 1);
+                    //score -= overLaps.GroupBy(slot => slot.Profesor.Id).Sum(x => x.Count() - 1);
                     score -= overLaps.GroupBy(slot => slot.Dvorana.Id).Sum(x => x.Count() - 1);
                     score -= overLaps.GroupBy(slot => slot.Kolegij.Id).Sum(x => x.Count() - 1);
                     score -= overLaps.Sum(item => item.Students.Intersect(value.Students).Count());
