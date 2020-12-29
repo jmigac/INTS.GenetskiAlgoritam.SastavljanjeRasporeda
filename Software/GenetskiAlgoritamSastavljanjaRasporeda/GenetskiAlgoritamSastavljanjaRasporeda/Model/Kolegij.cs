@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GenetskiAlgoritamSastavljanjaRasporeda.Model
 {
-    class Kolegij
+    public class Kolegij
     {
         private int _id { get; set; }
         private string _naziv { get; set; }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,13 +25,11 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
 
         private void UcitajDatoteke()
         {
-            Data.GetInstance().AllStudents= AbstractFactory.GetValuesForStudents(@"D:\Workspace\Projekt\INTS\INTS.GenetskiAlgoritam.SastavljanjeRasporeda\Software\GenetskiAlgoritamSastavljanjaRasporeda\GenetskiAlgoritamSastavljanjaRasporeda\Datoteke\studenti.csv");
-            string st = "";
-            foreach (var item in Data.GetInstance().AllStudents)
-            {
-                st += item.Ime + " " + item.Prezime + " | ";
-            }
-            //MessageBox.Show(st);
+            Data.GetInstance().AllStudents= AbstractFactory.GetValuesForStudents("studenti.csv");
+            Data.GetInstance().AllKolegij = AbstractFactory.GetValuesForKolegijs("kolegij.csv");
+            Data.GetInstance().AllProfesor = AbstractFactory.GetValuesForProfesors("profesori.csv");
+            Data.GetInstance().AllDvorana = AbstractFactory.GetValuesForDvoranas("dvorana.csv");
+            Data.GetInstance().AllKolokvij = AbstractFactory.GetValuesForKolokvijs("kolokvij.csv");
         }
     }
 }

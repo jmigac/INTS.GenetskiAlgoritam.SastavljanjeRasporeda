@@ -51,11 +51,25 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller.FactoryMethod.Concre
                 k.Id = int.Parse(values[0]);
                 k.Naziv = values[1];
                 k.GodinaStudija = int.Parse(values[2]);
+                HashSet<DateTime> datumi = new HashSet<DateTime>();
+                NapuniDatume(values[3],ref datumi);
+                k.CiljaniDatum = datumi;
                 return k;
             }
             catch (Exception ex)
             {
                 throw new FormatException("Datoteka ne sadrži dobar poredak znakova prema uputama.");
+            }
+        }
+
+        private void NapuniDatume(string v,ref HashSet<DateTime> datumi)
+        {
+            string[] datumiIspita = v.Split(',');
+            foreach (string dt in datumiIspita)
+            {
+                string datumObrade = dt.Trim();
+                DateTime objToAdd = DateTime.Parse(dt);
+                datumi.Add(objToAdd);
             }
         }
     }
