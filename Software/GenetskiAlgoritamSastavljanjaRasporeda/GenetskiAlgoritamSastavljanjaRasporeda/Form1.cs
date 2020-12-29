@@ -24,14 +24,14 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
             UcitajDatoteke();
 
 
-            Population population = new Population(1000, new Kromozom(), new Kromozom.Fitness(), new EliteSelection());
+            Population population = new Population(50, new Kromozom(), new Kromozom.Fitness(), new EliteSelection());
 
             int i = 0;
             while (true)
             {
                 population.RunEpoch();
                 i++;
-                if (population.FitnessMax >= 0.99 || i >= 1000)
+                if (population.FitnessMax >= 0.99 || i >= 50)
                 {
                     break;
                 }
