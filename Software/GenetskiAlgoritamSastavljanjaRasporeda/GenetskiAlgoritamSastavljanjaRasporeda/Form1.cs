@@ -11,6 +11,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -23,9 +24,20 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
         {
             InitializeComponent();
             UcitajDatoteke();
+        }
 
+        private void UcitajDatoteke()
+        {
+            Data.GetInstance().AllStudents= AbstractFactory.GetValuesForStudents("studenti.csv");
+            Data.GetInstance().AllKolegij = AbstractFactory.GetValuesForKolegijs("kolegij.csv");
+            Data.GetInstance().AllProfesor = AbstractFactory.GetValuesForProfesors("profesori.csv");
+            Data.GetInstance().AllDvorana = AbstractFactory.GetValuesForDvoranas("dvorana.csv");
+        }
 
-            Population population = new Population(50, new Kromozom(), new Kromozom.Fitness(), new EliteSelection());
+        private void StartGenetskiAlgoritam(double fitnessMax,int brGeneracija)
+        {
+            dgvRasporedKolokvija.DataSource = null;
+            Population population = new Population(brGeneracija, new Kromozom(), new Kromozom.Fitness(), new EliteSelection());
 
             int i = 0;
             while (true)
@@ -33,7 +45,7 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
                 population.RunEpoch();
                 i++;
                 lblScore.Text = "Fitness:" + population.FitnessMax;
-                if (population.FitnessMax >= 0.99 || i >= 50)
+                if (population.FitnessMax >= fitnessMax || i >= brGeneracija)
                 {
                     break;
                 }
@@ -44,17 +56,13 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
             dgvRasporedKolokvija.DataSource = null;
             najbolji.Sort((x, y) => DateTime.Compare(x.VrijemePocetka, y.VrijemePocetka));
             dgvRasporedKolokvija.DataSource = najbolji;
-            
-
         }
 
-        private void UcitajDatoteke()
+        private void btnGeneriraj_Click(object sender, EventArgs e)
         {
-            Data.GetInstance().AllStudents= AbstractFactory.GetValuesForStudents("studenti.csv");
-            Data.GetInstance().AllKolegij = AbstractFactory.GetValuesForKolegijs("kolegij.csv");
-            Data.GetInstance().AllProfesor = AbstractFactory.GetValuesForProfesors("profesori.csv");
-            Data.GetInstance().AllDvorana = AbstractFactory.GetValuesForDvoranas("dvorana.csv");
-            //Data.GetInstance().AllKolokvij = AbstractFactory.GetValuesForKolokvijs("kolokvij.csv");
+            double fitnessMax = double.Parse(txtFitnessMax.Text);
+            int brGeneracija = int.Parse(txtBrGeneracija.Text);
+            StartGenetskiAlgoritam(fitnessMax, brGeneracija);
         }
     }
 }
