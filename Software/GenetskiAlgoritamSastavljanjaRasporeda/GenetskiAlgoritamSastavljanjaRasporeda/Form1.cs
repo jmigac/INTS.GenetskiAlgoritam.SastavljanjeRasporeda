@@ -24,7 +24,7 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
             UcitajDatoteke();
 
 
-            Population population = new Population(40, new Kromozom(), new Kromozom.Fitness(), new EliteSelection());
+            Population population = new Population(25, new Kromozom(), new Kromozom.Fitness(), new EliteSelection());
 
             int i = 0;
             while (true)
@@ -32,7 +32,7 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
                 population.RunEpoch();
                 i++;
                 lblScore.Text = "Fitness:" + population.FitnessSum;
-                if (population.FitnessMax >= 0.99 || i >= 40)
+                if (population.FitnessMax >= 0.99 || i >= 25)
                 {
                     break;
                 }
