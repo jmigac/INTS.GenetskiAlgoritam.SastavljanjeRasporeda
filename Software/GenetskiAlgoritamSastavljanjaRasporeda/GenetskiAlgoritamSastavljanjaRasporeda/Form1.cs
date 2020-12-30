@@ -60,9 +60,19 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
 
         private void btnGeneriraj_Click(object sender, EventArgs e)
         {
-            double fitnessMax = double.Parse(txtFitnessMax.Text);
-            int brGeneracija = int.Parse(txtBrGeneracija.Text);
-            StartGenetskiAlgoritam(fitnessMax, brGeneracija);
+            try
+            {
+                double fitnessMax = double.Parse(txtFitnessMax.Text);
+                int brGeneracija = int.Parse(txtBrGeneracija.Text);
+                StartGenetskiAlgoritam(fitnessMax, brGeneracija);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Pogreška kod parsiranja unesenih vrijednosti."+Environment.NewLine+"Koristim sljedeće vrijednosti: maksimalna vrijednost za fitness = 0.99, a broj generacija = 35");
+                StartGenetskiAlgoritam(0.99, 35);
+            }
+            
+            
         }
     }
 }
