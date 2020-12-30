@@ -18,21 +18,22 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda
 {
     public partial class Form1 : Form
     {
+
         public Form1()
         {
             InitializeComponent();
             UcitajDatoteke();
 
 
-            Population population = new Population(25, new Kromozom(), new Kromozom.Fitness(), new EliteSelection());
+            Population population = new Population(50, new Kromozom(), new Kromozom.Fitness(), new EliteSelection());
 
             int i = 0;
             while (true)
             {
                 population.RunEpoch();
                 i++;
-                lblScore.Text = "Fitness:" + population.FitnessSum;
-                if (population.FitnessMax >= 0.99 || i >= 25)
+                lblScore.Text = "Fitness:" + population.FitnessMax;
+                if (population.FitnessMax >= 0.99 || i >= 50)
                 {
                     break;
                 }

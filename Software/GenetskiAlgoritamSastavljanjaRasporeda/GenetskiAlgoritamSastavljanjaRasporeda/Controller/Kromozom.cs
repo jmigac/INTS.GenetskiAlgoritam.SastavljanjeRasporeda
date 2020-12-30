@@ -3,6 +3,7 @@ using Accord.Math;
 using GenetskiAlgoritamSastavljanjaRasporeda.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,8 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
         public List<TimeSlotChromosome> Value;
 
         static Random Random = new Random();
+
+        
         public struct TimeSlotChromosome
         {
             public int id { get; set; }
@@ -52,6 +55,7 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
             IEnumerable<TimeSlotChromosome> generateRandomSlots()
             {
                 var courses = Data.GetInstance().AllKolegij;
+                int idGeneratora = 1;
 
                 foreach (var course in courses)
                 {
@@ -59,13 +63,14 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
                     {
                         int brStudenata = GetBrojStudenataNaGodini(course.GodinaStudija);
                         int tk=Random.Next(0, 2);
-                        int idGeneratora = 1;
+                        
                         yield return new TimeSlotChromosome()
                         {
                             id = idGeneratora++,
                             VrijemePocetka = nesto.AddHours(Random.Next(6, 21)),
                             Kolegij = course,
                             TipKolokvija = tk,
+                            //Dvorana sa kapacitetom i dobrog tipa
                             Dvorana = Data.GetInstance().AllDvorana.OrderBy(x=>Guid.NewGuid()).FirstOrDefault(x => x.Kapacitet >= brStudenata && x.TipDvorane == tk),
                             Profesor = GetProfesor(course),
                             Students = Data.GetInstance().AllStudents.Where(x => x.GodinaStudija == course.GodinaStudija).ToList(),
@@ -119,54 +124,61 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
             var index = Random.Next(0, Value.Count - 1);
             var Mutirani = Value.ElementAt(index);
             Calendar cal = DateTimeFormatInfo.CurrentInfo.Calendar;
-            if (Mutirani.VrijemePocetka.Hour<20&& Mutirani.VrijemePocetka.Hour > 6)
+
+            while (BrojKolokvijaUTjednu(Mutirani.VrijemePocetka) >= 3)
             {
-                Dictionary<int,List<TimeSlotChromosome>> kolokvijiPoTjednima = CheckIfThreeKolokvijsInAWeek();
-                int tjedanKolokvija = cal.GetWeekOfYear(Mutirani.VrijemePocetka, 0, DayOfWeek.Monday);
-                if (kolokvijiPoTjednima.ContainsKey(tjedanKolokvija))
+                if (Mutirani.VrijemePocetka.DayOfWeek == DayOfWeek.Saturday)
                 {
-                    if (kolokvijiPoTjednima[tjedanKolokvija].Count >= 3)
-                    {
-                        Mutirani.VrijemePocetka= Mutirani.VrijemePocetka.AddDays(7);
-                        string ispis = "";
-                        foreach (var item in kolokvijiPoTjednima[tjedanKolokvija])
-                        {
-                            ispis += item.Kolegij.Naziv + " " + "\n";
-                        }
-                        //System.Windows.Forms.MessageBox.Show("Tjedan:"+tjedanKolokvija+"\n"+"Kolegiji:"+"\n"+ispis+"\n"+"Mutirani:"+"\n"+Mutirani.Kolegij.Naziv+"\n"+Mutirani.VrijemePocetka+"\n"+Mutirani.VrijemeZavrsetka);
-                    }
+                    Mutirani.VrijemePocetka = Mutirani.VrijemePocetka.AddDays(Random.Next(2,5));
+                }else if (Mutirani.VrijemePocetka.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    Mutirani.VrijemePocetka = Mutirani.VrijemePocetka.AddDays(Random.Next(1, 5));
+                }
+                else
+                {
+                    Mutirani.VrijemePocetka = Mutirani.VrijemePocetka.AddDays(7);
                 }
                 
-                
+                Value[index] = Mutirani;
+            }
+
+            if(Mutirani.VrijemePocetka.Hour>=19 && Mutirani.VrijemePocetka.Hour <= 6)
+            {
+                Mutirani.VrijemePocetka = Mutirani.VrijemePocetka.AddHours(1);
+            }else if(Mutirani.VrijemePocetka.Hour >= 20 && Mutirani.VrijemePocetka.Hour <= 7)
+            {
+                Mutirani.VrijemePocetka = Mutirani.VrijemePocetka.AddHours(-1);
             }
 
 
             int brStudenata = GetBrojStudenataNaGodini(Mutirani.Kolegij.GodinaStudija);
             Mutirani.Dvorana = Data.GetInstance().AllDvorana.OrderBy(x => Guid.NewGuid()).FirstOrDefault(x => x.Kapacitet >= brStudenata && x.TipDvorane == Mutirani.TipKolokvija);
+
             Value[index] = Mutirani;
-
-            
-
 
         }
 
-        private Dictionary<int, List<TimeSlotChromosome>> CheckIfThreeKolokvijsInAWeek()
+        private int BrojKolokvijaUTjednu(DateTime vrijemePocetka)
         {
+           
             Calendar cal = DateTimeFormatInfo.CurrentInfo.Calendar;
-            int count = 0;
-            int MAX_KOLOKVIJS = 3;
+            
             Dictionary<int, List<TimeSlotChromosome>> kolokviji = new Dictionary<int, List<TimeSlotChromosome>>();
-            for(int i = 0; i < 54; i++)
+            for (int i = 0; i < 54; i++)
             {
                 kolokviji.Add(i, new List<TimeSlotChromosome>());
             }
-            for(int i = 0; i < Value.Count; i++)
+
+             for(int i = 0; i < Value.Count; i++)
             {
                 int tjedanGodine = cal.GetWeekOfYear(Value[i].VrijemePocetka, 0, DayOfWeek.Monday);
                 kolokviji[tjedanGodine].Add(Value[i]);
             }
-            return kolokviji;
+
+
+            return kolokviji[cal.GetWeekOfYear(vrijemePocetka, 0, DayOfWeek.Monday)].Count;
         }
+        
 
         public override void Crossover(IChromosome pair)
         {
@@ -191,28 +203,97 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
                 var values = (chromosome as Kromozom).Value;
                 List<TimeSlotChromosome> toDelete = new List<TimeSlotChromosome>();
 
-                var GetoverLaps = new Func<TimeSlotChromosome, List<TimeSlotChromosome>>(current => values
+                Calendar cal = DateTimeFormatInfo.CurrentInfo.Calendar;
+
+                var GetoverLapsWeek = new Func<TimeSlotChromosome, List<TimeSlotChromosome>>(current => values
                     .Except(new[] { current })
-                    .Where(slot => slot.VrijemePocetka.Day == current.VrijemePocetka.Day)
-                    .Where(slot => slot.VrijemePocetka == current.VrijemePocetka
-                                  || slot.VrijemePocetka <= current.VrijemeZavrsetka && slot.VrijemePocetka >= current.VrijemePocetka
-                                  || slot.VrijemeZavrsetka >= current.VrijemePocetka && slot.VrijemeZavrsetka <= current.VrijemeZavrsetka)
+                    .Where(slot => cal.GetWeekOfYear(slot.VrijemePocetka, 0, DayOfWeek.Monday) == cal.GetWeekOfYear(current.VrijemePocetka, 0, DayOfWeek.Monday))
                     .ToList());
 
-                Calendar cal = DateTimeFormatInfo.CurrentInfo.Calendar;
-                
+                var GetoverLapsDay = new Func<TimeSlotChromosome, List<TimeSlotChromosome>>(current => values
+                    .Except(new[] { current })
+                    .Where(slot => slot.VrijemePocetka == current.VrijemePocetka)
+                    .ToList());
+
+
+
                 foreach (var value in values)
                 {
-                    var overLaps = GetoverLaps(value);
-                    score -= overLaps.GroupBy(slot => slot.Profesor.Id).Sum(x => x.Count() - 1);
-                    score -= overLaps.GroupBy(slot => slot.Dvorana.Id).Sum(x => x.Count() - 1);
-                    score -= overLaps.GroupBy(slot => slot.Kolegij.Id).Sum(x => x.Count() - 1);
-                    score -= overLaps.Sum(item => item.Students.Intersect(value.Students).Count());
-                    score -= overLaps.GroupBy(slot => slot.Kolegij.GodinaStudija).Sum(x => x.Count() - 1);
-                    score -= (overLaps.GroupBy(s => cal.GetWeekOfYear(s.VrijemePocetka,0,DayOfWeek.Monday)).Sum(s=>s.Count()-1)*3);
+                    Debug.WriteLine("Velicina Overlap Tjedna: " + GetoverLapsWeek(value).Count());
+                    Debug.WriteLine("Velicina Overlap Dana: " + GetoverLapsDay(value).Count());
+
+                    var dayOverLaps = GetoverLapsDay(value);
+                    var weekOverLaps = GetoverLapsWeek(value);
+
+                    //Profesor u isto vrijeme
+                    score -= dayOverLaps.GroupBy(slot => slot.Profesor.Id).Sum(x => x.Count() - 1);
+                    if (dayOverLaps.GroupBy(slot => slot.Profesor.Id).Sum(x => x.Count() - 1) >= 1)
+                    {
+                        Debug.WriteLine("Kazna za Profesor u isto vrijeme - " + value.VrijemePocetka + " " + value.Kolegij);
+                    }
+
+                    //Dvorana u isto vrijeme
+                    score -= dayOverLaps.GroupBy(slot => slot.Dvorana.Id).Sum(x => x.Count() - 1);
+                    if (dayOverLaps.GroupBy(slot => slot.Dvorana.Id).Sum(x => x.Count() - 1) >= 1)
+                    {
+                        Debug.WriteLine("Kazna za Dvorana u isto vrijeme - " + value.VrijemePocetka + " " + value.Kolegij);
+                    }
+
+                    //Godina Studija u isto vrijeme
+                    score -= dayOverLaps.GroupBy(slot => slot.GodinaStudija).Sum(x => x.Count() - 1);
+                    if (dayOverLaps.GroupBy(slot => slot.GodinaStudija).Sum(x => x.Count() - 1) >= 1)
+                    {
+                        Debug.WriteLine("Kazna za Studija u isto vrijeme - " + value.VrijemePocetka + " " + value.Kolegij);
+                    }
+
+                    //Dvorana dobrog tipa
+                    if (value.TipKolokvija != value.Dvorana.TipDvorane)
+                    {
+                        score -= 1;
+                        Debug.WriteLine("Kazna za Dvorana krivog tipa - " + value.VrijemePocetka + " " + value.Kolegij);
+                    }
+
+                    //Dvorana sa dosta kapaciteta
+                    if (value.Students.Count > value.Dvorana.Kapacitet)
+                    {
+                        score -= 1;
+                        Debug.WriteLine("Kazna za Dvorana bez kapaciteta - " + value.VrijemePocetka + " " + value.Kolegij);
+                    }
+
+                    int[] godineStudija = new int[5];
+
+                    //3 kolokvija u GodiniStudija
+                    foreach (var nesto in weekOverLaps)
+                    {
+                        godineStudija[nesto.GodinaStudija - 1]++;
+                    }
+                    foreach (var nesto in godineStudija)
+                    {
+                        if (nesto > 3)
+                        {
+                            score -= (nesto - 3)*1.5;
+                            Debug.WriteLine("Kazna za 3 kolokvija iste godine studija u jednom tjednu - " + value.VrijemePocetka + " / Godina Studija: " + value.Kolegij.GodinaStudija + " -> komada: " + nesto);
+                        }
+                    }
+
+                    //Kazna za kolokvij u subotu ili nedjelju
+                    if (value.VrijemePocetka.DayOfWeek == DayOfWeek.Saturday|| value.VrijemePocetka.DayOfWeek == DayOfWeek.Sunday)
+                    {
+                        score -= 1;
+                        Debug.WriteLine("Kazna za subotu ili nedjelju - " + value.VrijemePocetka + " " + value.Kolegij );
+                    }
+
+                    //Kazna za kolokvij izvan radnog vremena
+                    if (value.VrijemePocetka.Hour > 20 || value.VrijemePocetka.Hour < 6)
+                    {
+                        score -= 1;
+                        Debug.WriteLine("Kazna za kolokvij izvan radnog vremena - " + value.VrijemePocetka + " " + value.Kolegij);
+                    }
                 }
 
-                score -= values.GroupBy(v => v.VrijemePocetka.Day).Count() * 0.5;
+
+
+
                 return Math.Pow(Math.Abs(score), -1);
             }
         }
