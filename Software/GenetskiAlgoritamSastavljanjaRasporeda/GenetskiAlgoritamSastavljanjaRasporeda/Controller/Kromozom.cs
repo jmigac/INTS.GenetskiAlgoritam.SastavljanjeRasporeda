@@ -201,7 +201,6 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
             {
                 double score = 1;
                 var values = (chromosome as Kromozom).Value;
-                List<TimeSlotChromosome> toDelete = new List<TimeSlotChromosome>();
 
                 Calendar cal = DateTimeFormatInfo.CurrentInfo.Calendar;
 
@@ -214,8 +213,6 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
                     .Except(new[] { current })
                     .Where(slot => slot.VrijemePocetka == current.VrijemePocetka)
                     .ToList());
-
-
 
                 foreach (var value in values)
                 {
@@ -244,20 +241,6 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
                     if (dayOverLaps.GroupBy(slot => slot.GodinaStudija).Sum(x => x.Count() - 1) >= 1)
                     {
                         Debug.WriteLine("Kazna za Studija u isto vrijeme - " + value.VrijemePocetka + " " + value.Kolegij);
-                    }
-
-                    //Dvorana dobrog tipa
-                    if (value.TipKolokvija != value.Dvorana.TipDvorane)
-                    {
-                        score -= 1;
-                        Debug.WriteLine("Kazna za Dvorana krivog tipa - " + value.VrijemePocetka + " " + value.Kolegij);
-                    }
-
-                    //Dvorana sa dosta kapaciteta
-                    if (value.Students.Count > value.Dvorana.Kapacitet)
-                    {
-                        score -= 1;
-                        Debug.WriteLine("Kazna za Dvorana bez kapaciteta - " + value.VrijemePocetka + " " + value.Kolegij);
                     }
 
                     int[] godineStudija = new int[5];
@@ -289,10 +272,22 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller
                         score -= 1;
                         Debug.WriteLine("Kazna za kolokvij izvan radnog vremena - " + value.VrijemePocetka + " " + value.Kolegij);
                     }
+
+                    //Dvorana dobrog tipa
+                    if (value.TipKolokvija != value.Dvorana.TipDvorane)
+                    {
+                        score -= 1;
+                        Debug.WriteLine("Kazna za Dvorana krivog tipa - " + value.VrijemePocetka + " " + value.Kolegij);
+                    }
+
+                    //Dvorana sa dosta kapaciteta
+                    if (value.Students.Count > value.Dvorana.Kapacitet)
+                    {
+                        score -= 1;
+                        Debug.WriteLine("Kazna za Dvorana bez kapaciteta - " + value.VrijemePocetka + " " + value.Kolegij);
+                    }
+
                 }
-
-
-
 
                 return Math.Pow(Math.Abs(score), -1);
             }
