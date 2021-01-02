@@ -33,5 +33,9 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Model
             Lokacija = lokacija;
             TipDvorane = tipDvorane;
         }
+        public override string ToString()
+        {
+            return this.Naziv;
+        }
     }
 }

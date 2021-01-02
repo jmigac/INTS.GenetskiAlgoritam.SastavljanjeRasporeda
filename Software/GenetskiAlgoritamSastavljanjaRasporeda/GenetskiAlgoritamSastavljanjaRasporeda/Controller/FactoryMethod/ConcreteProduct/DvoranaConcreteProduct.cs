@@ -57,7 +57,7 @@ namespace GenetskiAlgoritamSastavljanjaRasporeda.Controller.FactoryMethod.Concre
             }
             catch (Exception ex)
             {
-                throw new FormatException("Datoteka ne sadrži dobar poredak znakova prema uputama.");
+                throw new FormatException("Datoteka ne sadrži dobar poredak znakova prema uputama Dvorana.");
             }
         }
     }
